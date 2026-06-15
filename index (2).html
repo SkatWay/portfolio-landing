@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taskora — управляй командой без хаоса</title>
+
+  <!-- Шрифты -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+
+  <!-- Иконки Lucide -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* =============================================
+       1. ПЕРЕМЕННЫЕ — цвета, шрифты, отступы
+    ============================================= */
+    :root {
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Inter', sans-serif;
+
+      /* Типографика */
+      --text-xs:   clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm:   clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg:   clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl:   clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --text-2xl:  clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+      --text-3xl:  clamp(2.5rem, 1rem + 4vw, 5rem);
+
+      /* Отступы */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+      --space-20: 5rem;
+      --space-24: 6rem;
+
+      /* Радиус */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+      --radius-full: 9999px;
+
+      /* Переходы */
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --transition: 180ms var(--ease);
+
+      /* Ширина контейнера */
+      --content-narrow: 640px;
+      --content-default: 960px;
+      --content-wide: 1200px;
+    }
+
+    /* Тёмная тема */
+    [data-theme="dark"] {
+      --bg:            #0d0e11;
+      --bg-surface:    #13141a;
+      --bg-card:       #191b23;
+      --bg-card-hover: #1f2130;
+      --border:        rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.12);
+
+      --text:          #e8e9ed;
+      --text-muted:    #8b8d9a;
+      --text-faint:    #4a4c5a;
+      --text-inverse:  #0d0e11;
+
+      /* Акцент — фиолетово-синий */
+      --accent:        #6c63ff;
+      --accent-hover:  #5a51e8;
+      --accent-glow:   rgba(108, 99, 255, 0.25);
+      --accent-subtle: rgba(108, 99, 255, 0.1);
+
+      /* Второй акцент — розовый */
+      --accent2:       #f472b6;
+      --accent2-glow:  rgba(244, 114, 182, 0.2);
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+      --shadow-accent: 0 8px 32px rgba(108, 99, 255, 0.3);
+    }
+
+    /* Светлая тема */
+    [data-theme="light"] {
+      --bg:            #f5f5f8;
+      --bg-surface:    #ffffff;
+      --bg-card:       #ffffff;
+      --bg-card-hover: #f8f8fc;
+      --border:        rgba(0,0,0,0.07);
+      --border-strong: rgba(0,0,0,0.12);
+
+      --text:          #1a1b26;
+      --text-muted:    #5a5c6e;
+      --text-faint:    #a0a2b0;
+      --text-inverse:  #ffffff;
+
+      --accent:        #5b52e8;
+      --accent-hover:  #4940d0;
+      --accent-glow:   rgba(91, 82, 232, 0.2);
+      --accent-subtle: rgba(91, 82, 232, 0.08);
+
+      --accent2:       #d946a8;
+      --accent2-glow:  rgba(217, 70, 168, 0.15);
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+      --shadow-accent: 0 8px 32px rgba(91, 82, 232, 0.2);
+    }
+
+    /* =============================================
+       2. БАЗОВЫЙ СБРОС
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--space-20);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    img, svg { display: block; max-width: 100%; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; background: none; border: none; }
+    a { color: inherit; text-decoration: none; }
+    h1,h2,h3,h4 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* =============================================
+       3. УТИЛИТЫ
+    ============================================= */
+    .container {
+      max-width: var(--content-wide);
+      margin-inline: auto;
+      padding-inline: var(--space-6);
+    }
+    .container--narrow { max-width: var(--content-narrow); }
+    .container--default { max-width: var(--content-default); }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+    }
+
+    /* Анимация появления при скролле */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s var(--ease), transform 0.65s var(--ease);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* Бейдж */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      background: var(--accent-subtle);
+      border: 1px solid rgba(108,99,255,0.25);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* Кнопки */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      transition: all var(--transition);
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: var(--shadow-accent);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 40px rgba(108,99,255,0.4);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      color: var(--text-muted);
+      border: 1px solid var(--border-strong);
+    }
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: var(--accent-subtle);
+    }
+
+    .btn-lg {
+      padding: var(--space-4) var(--space-8);
+      font-size: var(--text-base);
+      border-radius: var(--radius-xl);
+    }
+
+    /* =============================================
+       4. ШАПКА
+    ============================================= */
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: var(--space-4) 0;
+      transition: background var(--transition), backdrop-filter var(--transition),
+                  border-color var(--transition), box-shadow var(--transition);
+    }
+    .site-header.scrolled {
+      background: rgba(13, 14, 17, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    [data-theme="light"] .site-header.scrolled {
+      background: rgba(245, 245, 248, 0.85);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-6);
+    }
+
+    /* Логотип */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 700;
+      color: var(--text);
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      border-radius: var(--radius-md);
+      display: grid;
+      place-items: center;
+    }
+    .logo-icon svg { color: #fff; }
+
+    /* Навигация */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+    .site-nav a {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+    .site-nav a:hover { color: var(--text); }
+
+    /* Правая часть шапки */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    /* Кнопка темы */
+    .theme-toggle {
+      width: 40px; height: 40px;
+      display: grid; place-items: center;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      transition: all var(--transition);
+    }
+    .theme-toggle:hover { color: var(--text); border-color: var(--border-strong); }
+
+    /* Мобильное меню */
+    .menu-toggle {
+      display: none;
+      width: 40px; height: 40px;
+      place-items: center;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .mobile-nav {
+      display: none;
+      flex-direction: column;
+      gap: var(--space-1);
+      padding: var(--space-4);
+      border-top: 1px solid var(--border);
+      background: var(--bg-surface);
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .mobile-nav a:hover { background: var(--accent-subtle); color: var(--text); }
+
+    @media (max-width: 768px) {
+      .site-nav, .header-actions .btn { display: none; }
+      .menu-toggle { display: grid; }
+    }
+
+    /* =============================================
+       5. HERO-СЕКЦИЯ
+    ============================================= */
+    .hero {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      padding-block: calc(var(--space-24) + var(--space-16)) var(--space-24);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Фоновый градиент */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, var(--accent-glow), transparent),
+        radial-gradient(ellipse 50% 40% at 80% 80%, var(--accent2-glow), transparent);
+      pointer-events: none;
+    }
+
+    /* Сетка-паттерн */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, black 30%, transparent 80%);
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 820px;
+      margin-inline: auto;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      justify-content: center;
+      margin-bottom: var(--space-6);
+    }
+
+    /* Анимированный «новинка» тег */
+    .new-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-2);
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+    .new-tag .pill {
+      background: var(--accent);
+      color: #fff;
+      padding: 1px 8px;
+      border-radius: var(--radius-full);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-size: var(--text-3xl);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: var(--space-6);
+      line-height: 1.1;
+    }
+    .hero-title .accent-word {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: var(--text-lg);
+      color: var(--text-muted);
+      max-width: 60ch;
+      margin-inline: auto;
+      margin-bottom: var(--space-10);
+      line-height: 1.6;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      justify-content: center;
+      margin-bottom: var(--space-12);
+    }
+
+    .hero-note {
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      justify-content: center;
+    }
+
+    /* Превью-карточка дашборда */
+    .hero-preview {
+      margin-top: var(--space-16);
+      position: relative;
+    }
+    .preview-frame {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+    }
+    [data-theme="light"] .preview-frame {
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px var(--border);
+    }
+    /* Верхняя полоска браузера */
+    .preview-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red   { background: #ff5f57; }
+    .dot-yellow{ background: #febc2e; }
+    .dot-green { background: #28c840; }
+    .preview-bar-url {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-1) var(--space-3);
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      text-align: center;
+    }
+    /* Содержимое имитации дашборда */
+    .preview-body {
+      padding: var(--space-4);
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: var(--space-4);
+      min-height: 320px;
+    }
+    @media (max-width: 600px) {
+      .preview-body { grid-template-columns: 1fr; }
+      .preview-sidebar { display: none; }
+    }
+    .preview-sidebar {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .sidebar-item {
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .sidebar-item.active {
+      background: var(--accent-subtle);
+      color: var(--accent);
+    }
+    .sidebar-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.6;
+    }
+    .preview-main { display: flex; flex-direction: column; gap: var(--space-3); }
+    .kanban-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    @media (max-width: 480px) { .kanban-cols { grid-template-columns: 1fr; } }
+    .kanban-col {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .col-title {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--space-1);
+    }
+    .task-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+    }
+    .task-title { font-size: var(--text-xs); color: var(--text); margin-bottom: var(--space-2); font-weight: 500; }
+    .task-meta { display: flex; align-items: center; gap: var(--space-2); }
+    .task-prio {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+    }
+    .prio-high { background: rgba(244,63,94,0.15); color: #f43f5e; }
+    .prio-mid  { background: rgba(251,146,60,0.15); color: #fb923c; }
+    .prio-low  { background: rgba(52,211,153,0.15); color: #34d399; }
+    .task-avatar {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      margin-left: auto;
+      font-size: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Статистика под превью */
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-6) var(--space-12);
+      justify-content: center;
+      margin-top: var(--space-12);
+    }
+    .stat-item { text-align: center; }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      color: var(--text);
+    }
+    .stat-label { font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-1); }
+
+    /* =============================================
+       6. ЛОГОТИПЫ ПАРТНЁРОВ / ДОВЕРИЕ
+    ============================================= */
+    .trust-section {
+      padding-block: var(--space-16);
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .trust-label {
+      text-align: center;
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-8);
+    }
+    /* Бегущая строка */
+    .marquee-wrap {
+      display: flex;
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+    }
+    .marquee-track {
+      display: flex;
+      gap: var(--space-16);
+      animation: marquee 25s linear infinite;
+      white-space: nowrap;
+      will-change: transform;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .brand-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: 700;
+      color: var(--text-faint);
+      transition: color var(--transition);
+    }
+    .brand-item:hover { color: var(--text-muted); }
+    .brand-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+
+    /* =============================================
+       7. ВОЗМОЖНОСТИ / ФИЧИ
+    ============================================= */
+    .features-section {
+      padding-block: var(--space-24);
+    }
+    .section-header {
+      text-align: center;
+      max-width: 640px;
+      margin-inline: auto;
+      margin-bottom: var(--space-16);
+    }
+    .section-title {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      color: var(--text);
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-4);
+      letter-spacing: -0.02em;
+    }
+    .section-desc {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Большая фича — 2 колонки */
+    .feature-big {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-16);
+      align-items: center;
+      margin-bottom: var(--space-16);
+      padding: var(--space-12);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+    }
+    @media (max-width: 768px) {
+      .feature-big { grid-template-columns: 1fr; gap: var(--space-8); padding: var(--space-8); }
+    }
+    .feature-big.reverse { direction: rtl; }
+    .feature-big.reverse > * { direction: ltr; }
+
+    .feature-text .badge { margin-bottom: var(--space-5); }
+    .feature-title {
+      font-size: var(--text-xl);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-4);
+      letter-spacing: -0.01em;
+    }
+    .feature-desc {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: var(--space-6);
+      max-width: 50ch;
+    }
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+    .check-icon {
+      width: 18px; height: 18px;
+      background: var(--accent-subtle);
+      border-radius: var(--radius-full);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .check-icon svg { color: var(--accent); }
+
+    /* Визуальные блоки для больших фич */
+    .feature-visual {
+      background: var(--bg-surface);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      border: 1px solid var(--border);
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      overflow: hidden;
+    }
+    .visual-title {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Мини-список задач для визуала */
+    .task-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .task-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      font-size: var(--text-xs);
+    }
+    .task-row .assignee {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .task-row .task-name { flex: 1; color: var(--text); }
+    .task-row .prio-badge {
+      font-size: 9px;
+      padding: 1px 7px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+    }
+
+    /* Уведомления для визуала */
+    .notif-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .notif-item {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-start;
+      padding: var(--space-3);
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .notif-icon {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-md);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .notif-text { font-size: var(--text-xs); color: var(--text-muted); }
+    .notif-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+    /* Блок интеграций */
+    .integrations-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .integ-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .integ-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-subtle);
+      color: var(--text);
+    }
+    .integ-logo {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-md);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: var(--text-sm);
+      color: #fff;
+    }
+
+    /* Маленькие карточки фич — 3 в ряд */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+    }
+    @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .features-grid { grid-template-columns: 1fr; } }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      transition: all var(--transition);
+    }
+    .feature-card:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .feature-icon {
+      width: 44px; height: 44px;
+      background: var(--accent-subtle);
+      border-radius: var(--radius-lg);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      margin-bottom: var(--space-4);
+    }
+    .feature-card-title {
+      font-size: var(--text-base);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-2);
+    }
+    .feature-card-desc {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* =============================================
+       8. КАК ЭТО РАБОТАЕТ
+    ============================================= */
+    .how-section {
+      padding-block: var(--space-24);
+      background: var(--bg-surface);
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-8);
+      position: relative;
+    }
+    @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } }
+
+    /* Соединительная линия между шагами */
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: calc(33.33% - 0px);
+      right: calc(33.33% - 0px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0.4;
+    }
+    @media (max-width: 768px) { .steps-grid::before { display: none; } }
+
+    .step-item { text-align: center; padding: var(--space-6); }
+    .step-number {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      margin: 0 auto var(--space-6);
+      box-shadow: var(--shadow-accent);
+    }
+    .step-title {
+      font-size: var(--text-lg);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-3);
+    }
+    .step-desc {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 28ch;
+      margin-inline: auto;
+    }
+
+    /* =============================================
+       9. ЦЕНЫ
+    ============================================= */
+    .pricing-section {
+      padding-block: var(--space-24);
+    }
+
+    /* Переключатель месяц/год */
+    .billing-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      justify-content: center;
+      margin-bottom: var(--space-12);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+    .toggle-switch {
+      position: relative;
+      width: 44px; height: 24px;
+      background: var(--border-strong);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .toggle-switch.on { background: var(--accent); }
+    .toggle-knob {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform var(--transition);
+    }
+    .toggle-switch.on .toggle-knob { transform: translateX(20px); }
+    .save-badge {
+      background: rgba(52,211,153,0.15);
+      color: #34d399;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: var(--radius-full);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+      align-items: start;
+    }
+    @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin-inline: auto; } }
+
+    .plan-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8);
+      position: relative;
+      transition: all var(--transition);
+    }
+    .plan-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .plan-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, var(--accent-subtle) 0%, var(--bg-card) 60%);
+      box-shadow: var(--shadow-accent);
+    }
+    .plan-card.featured:hover { transform: translateY(-4px); }
+
+    .popular-tag {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 14px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .plan-name {
+      font-size: var(--text-base);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-2);
+    }
+    .plan-desc { font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-6); }
+    .plan-price {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-1);
+      margin-bottom: var(--space-6);
+    }
+    .price-currency { font-size: var(--text-lg); color: var(--text-muted); font-weight: 500; }
+    .price-amount {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+    .price-period { font-size: var(--text-sm); color: var(--text-muted); }
+    .price-yearly { font-size: var(--text-xs); color: var(--text-faint); margin-bottom: var(--space-6); display: none; }
+    .price-yearly.show { display: block; }
+
+    .plan-btn {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: var(--space-3);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      transition: all var(--transition);
+      margin-bottom: var(--space-6);
+    }
+    .plan-btn:hover { border-color: var(--accent); background: var(--accent-subtle); color: var(--accent); }
+    .plan-btn.primary-btn {
+      background: var(--accent);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: var(--shadow-accent);
+    }
+    .plan-btn.primary-btn:hover { background: var(--accent-hover); transform: none; }
+
+    .plan-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: var(--space-6);
+    }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+    .plan-features li .lucide { color: var(--accent); flex-shrink: 0; }
+    .plan-features li.unavail { opacity: 0.4; }
+    .plan-features li.unavail .lucide { color: var(--text-faint); }
+
+    /* =============================================
+       10. FAQ
+    ============================================= */
+    .faq-section {
+      padding-block: var(--space-24);
+      background: var(--bg-surface);
+    }
+    .faq-list {
+      max-width: var(--content-default);
+      margin-inline: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+    .faq-item.open { border-color: var(--accent); }
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-5) var(--space-6);
+      cursor: pointer;
+      gap: var(--space-4);
+    }
+    .faq-question-text { font-size: var(--text-base); font-weight: 600; color: var(--text); }
+    .faq-icon {
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: transform var(--transition);
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s var(--ease);
+    }
+    .faq-item.open .faq-answer { max-height: 400px; }
+    .faq-answer-inner {
+      padding: 0 var(--space-6) var(--space-5);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      line-height: 1.75;
+      border-top: 1px solid var(--border);
+      padding-top: var(--space-4);
+    }
+
+    /* =============================================
+       11. CTA-СЕКЦИЯ
+    ============================================= */
+    .cta-section {
+      padding-block: var(--space-24);
+    }
+    .cta-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-20) var(--space-12);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 100%, var(--accent-glow), transparent);
+      pointer-events: none;
+    }
+    .cta-title {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: var(--space-4);
+      position: relative;
+      letter-spacing: -0.02em;
+    }
+    .cta-desc {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      max-width: 50ch;
+      margin-inline: auto;
+      margin-bottom: var(--space-8);
+      position: relative;
+    }
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      justify-content: center;
+      position: relative;
+    }
+
+    /* =============================================
+       12. ПОДВАЛ
+    ============================================= */
+    .site-footer {
+      padding-block: var(--space-16) var(--space-8);
+      border-top: 1px solid var(--border);
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: var(--space-12);
+      margin-bottom: var(--space-12);
+    }
+    @media (max-width: 900px) {
+      .footer-top { grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+    }
+    @media (max-width: 560px) {
+      .footer-top { grid-template-columns: 1fr; }
+    }
+    .footer-brand { max-width: 280px; }
+    .footer-tagline {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin-top: var(--space-3);
+      line-height: 1.65;
+    }
+    .footer-col-title {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-4);
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+    .footer-links a {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+    .footer-links a:hover { color: var(--text); }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      padding-top: var(--space-8);
+      border-top: 1px solid var(--border);
+    }
+    .footer-copy { font-size: var(--text-xs); color: var(--text-faint); }
+    .footer-social { display: flex; gap: var(--space-3); }
+    .social-link {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .social-link:hover { color: var(--text); border-color: var(--border-strong); background: var(--accent-subtle); }
+
+    /* =============================================
+       13. КУРСОР-СВЕЧЕНИЕ
+    ============================================= */
+    .cursor-glow {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Курсор-свечение -->
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+<!-- =============================================
+     ШАПКА
+============================================= -->
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <div class="header-inner">
+
+      <!-- Логотип -->
+      <a href="#" class="logo" aria-label="Taskora — главная">
+        <div class="logo-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+          </svg>
+        </div>
+        Taskora
+      </a>
+
+      <!-- Навигация (десктоп) -->
+      <nav class="site-nav" aria-label="Основная навигация">
+        <a href="#features">Возможности</a>
+        <a href="#how">Как работает</a>
+        <a href="#pricing">Цены</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <!-- Действия -->
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему" title="Сменить тему">
+          <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <a href="#pricing" class="btn btn-primary">Попробовать бесплатно</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню" aria-expanded="false">
+          <i data-lucide="menu" width="20" height="20"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Мобильное меню -->
+    <nav class="mobile-nav" id="mobileNav" aria-label="Мобильная навигация">
+      <a href="#features">Возможности</a>
+      <a href="#how">Как работает</a>
+      <a href="#pricing">Цены</a>
+      <a href="#faq">FAQ</a>
+      <a href="#pricing" class="btn btn-primary" style="margin-top: var(--space-2);">Попробовать бесплатно</a>
+    </nav>
+  </div>
+</header>
+
+<!-- =============================================
+     HERO
+============================================= -->
+<main>
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-content">
+
+      <div class="hero-eyebrow reveal">
+        <span class="new-tag">
+          <span class="pill">Новинка</span>
+          ИИ-помощник по расстановке приоритетов уже в бете
+        </span>
+      </div>
+
+      <h1 class="hero-title reveal reveal-delay-1">
+        Управляй командой<br>
+        <span class="accent-word">без хаоса</span>
+      </h1>
+
+      <p class="hero-subtitle reveal reveal-delay-2">
+        Taskora объединяет задачи, дедлайны и коммуникацию в одном рабочем пространстве.
+        Больше никаких потерянных переписок и пропущенных сроков.
+      </p>
+
+      <div class="hero-cta reveal reveal-delay-3">
+        <a href="#pricing" class="btn btn-primary btn-lg">
+          <i data-lucide="zap" width="18" height="18"></i>
+          Начать бесплатно
+        </a>
+        <a href="#how" class="btn btn-ghost btn-lg">
+          Как это работает
+          <i data-lucide="arrow-right" width="18" height="18"></i>
+        </a>
+      </div>
+
+      <p class="hero-note reveal reveal-delay-4">
+        <i data-lucide="shield-check" width="13" height="13"></i>
+        14 дней Pro бесплатно · Карта не нужна · Отмена в один клик
+      </p>
+
+      <!-- Имитация дашборда -->
+      <div class="hero-preview reveal reveal-delay-4">
+        <div class="preview-frame">
+          <div class="preview-bar">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="preview-bar-url">app.taskora.io/workspace/проект-альфа</span>
+          </div>
+          <div class="preview-body">
+            <!-- Сайдбар -->
+            <div class="preview-sidebar">
+              <div class="sidebar-item active">
+                <span class="sidebar-dot"></span> Рабочий стол
+              </div>
+              <div class="sidebar-item">
+                <span class="sidebar-dot"></span> Мои задачи
+              </div>
+              <div class="sidebar-item">
+                <span class="sidebar-dot"></span> Команда
+              </div>
+              <div class="sidebar-item">
+                <span class="sidebar-dot"></span> Проекты
+              </div>
+              <div class="sidebar-item">
+                <span class="sidebar-dot"></span> Аналитика
+              </div>
+              <div class="sidebar-item">
+                <span class="sidebar-dot"></span> Интеграции
+              </div>
+            </div>
+            <!-- Канбан -->
+            <div class="preview-main">
+              <div class="kanban-cols">
+                <div class="kanban-col">
+                  <div class="col-title">В очереди</div>
+                  <div class="task-card">
+                    <div class="task-title">Редизайн онбординга</div>
+                    <div class="task-meta">
+                      <span class="task-prio prio-high">Высокий</span>
+                      <div class="task-avatar" style="background:#6c63ff;">А</div>
+                    </div>
+                  </div>
+                  <div class="task-card">
+                    <div class="task-title">API документация v2</div>
+                    <div class="task-meta">
+                      <span class="task-prio prio-low">Низкий</span>
+                      <div class="task-avatar" style="background:#10b981;">М</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="kanban-col">
+                  <div class="col-title">В работе</div>
+                  <div class="task-card">
+                    <div class="task-title">Интеграция с календарём</div>
+                    <div class="task-meta">
+                      <span class="task-prio prio-mid">Средний</span>
+                      <div class="task-avatar" style="background:#f472b6;">К</div>
+                    </div>
+                  </div>
+                  <div class="task-card">
+                    <div class="task-title">Push-уведомления iOS</div>
+                    <div class="task-meta">
+                      <span class="task-prio prio-high">Высокий</span>
+                      <div class="task-avatar" style="background:#f59e0b;">Д</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="kanban-col">
+                  <div class="col-title">Готово</div>
+                  <div class="task-card">
+                    <div class="task-title">Тёмная тема</div>
+                    <div class="task-meta">
+                      <span class="task-prio prio-low">Низкий</span>
+                      <div class="task-avatar" style="background:#6c63ff;">А</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Статистика -->
+      <div class="hero-stats">
+        <div class="stat-item reveal">
+          <div class="stat-number" data-counter="12000">0</div>
+          <div class="stat-label">активных команд</div>
+        </div>
+        <div class="stat-item reveal reveal-delay-1">
+          <div class="stat-number" data-counter="98">0</div>
+          <div class="stat-label">% оценка удовлетворённости</div>
+        </div>
+        <div class="stat-item reveal reveal-delay-2">
+          <div class="stat-number" data-counter="40">0</div>
+          <div class="stat-label">% экономия времени на планирование</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     ДОВЕРИЕ — логотипы
+============================================= -->
+<section class="trust-section">
+  <div class="container">
+    <p class="trust-label">Нам доверяют команды</p>
+    <div class="marquee-wrap">
+      <div class="marquee-track" aria-hidden="true">
+        <!-- 12 вымышленных компаний, повторяем для бесшовного эффекта -->
+        <span class="brand-item"><span class="brand-dot" style="background:#6c63ff;"></span>NovaCraft</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#10b981;"></span>GreenByte</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#f59e0b;"></span>AuronLabs</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#f472b6;"></span>PinkStack</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#3b82f6;"></span>Helixio</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#a78bfa;"></span>Ventra Co</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#f43f5e;"></span>Redshift HQ</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#14b8a6;"></span>Wavespace</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#fb923c;"></span>OrbitBase</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#818cf8;"></span>Plexify</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#34d399;"></span>Zeropoint</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#f472b6;"></span>Lunara</span>
+        <!-- Дублируем для бесшовной анимации -->
+        <span class="brand-item"><span class="brand-dot" style="background:#6c63ff;"></span>NovaCraft</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#10b981;"></span>GreenByte</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#f59e0b;"></span>AuronLabs</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#f472b6;"></span>PinkStack</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#3b82f6;"></span>Helixio</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#a78bfa;"></span>Ventra Co</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#f43f5e;"></span>Redshift HQ</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#14b8a6;"></span>Wavespace</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#fb923c;"></span>OrbitBase</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#818cf8;"></span>Plexify</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#34d399;"></span>Zeropoint</span>
+        <span class="brand-item"><span class="brand-dot" style="background:#f472b6;"></span>Lunara</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     ВОЗМОЖНОСТИ
+============================================= -->
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="badge">
+        <i data-lucide="sparkles" width="12" height="12"></i>
+        Возможности
+      </span>
+      <h2 class="section-title">Мощно по умолчанию,<br>просто внедрить</h2>
+      <p class="section-desc">
+        Taskora подстраивается под то, как ваша команда уже работает —
+        не требует часов на настройку и обучения.
+      </p>
+    </div>
+
+    <!-- Большая фича 1: умное распределение -->
+    <div class="feature-big reveal">
+      <div class="feature-text">
+        <span class="badge">
+          <i data-lucide="cpu" width="12" height="12"></i>
+          Умное распределение
+        </span>
+        <h3 class="feature-title">Задачи находят<br>исполнителей сами</h3>
+        <p class="feature-desc">
+          Назначайте задачи автоматически — с учётом навыков, текущей загрузки
+          и приоритета. Никаких узких мест и потерянных передач.
+        </p>
+        <ul class="feature-list">
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            Анализ компетенций каждого участника команды
+          </li>
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            Автоматическая балансировка нагрузки
+          </li>
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            Уведомление исполнителя в один клик
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="visual-title">Автоназначение задач</div>
+        <div class="task-list">
+          <div class="task-row">
+            <div class="assignee" style="background:#6c63ff;">А</div>
+            <span class="task-name">Разработка landing page</span>
+            <span class="task-prio prio-high">Срочно</span>
+          </div>
+          <div class="task-row">
+            <div class="assignee" style="background:#10b981;">М</div>
+            <span class="task-name">Написать unit-тесты</span>
+            <span class="task-prio prio-mid">Средний</span>
+          </div>
+          <div class="task-row">
+            <div class="assignee" style="background:#f472b6;">К</div>
+            <span class="task-name">Дизайн иконок v3</span>
+            <span class="task-prio prio-low">Низкий</span>
+          </div>
+          <div class="task-row">
+            <div class="assignee" style="background:#f59e0b;">Д</div>
+            <span class="task-name">QA мобильного приложения</span>
+            <span class="task-prio prio-high">Срочно</span>
+          </div>
+        </div>
+        <div style="margin-top: auto; padding: var(--space-3); background: var(--accent-subtle); border-radius: var(--radius-md); border: 1px solid rgba(108,99,255,0.2);">
+          <p style="font-size: var(--text-xs); color: var(--accent);">
+            <strong>ИИ:</strong> Задача «Миграция БД» назначена Алексею — загрузка 68%, статус senior backend.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Большая фича 2: коллаборация -->
+    <div class="feature-big reverse reveal">
+      <div class="feature-text">
+        <span class="badge">
+          <i data-lucide="users" width="12" height="12"></i>
+          Совместная работа
+        </span>
+        <h3 class="feature-title">Все всегда<br>в курсе событий</h3>
+        <p class="feature-desc">
+          Комментарии, упоминания и живые курсоры держат команду синхронизированной.
+          Видите изменения в момент, когда они происходят — на любом устройстве.
+        </p>
+        <ul class="feature-list">
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            Упоминания @участника с мгновенным уведомлением
+          </li>
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            Живые курсоры — видно, кто что редактирует
+          </li>
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            История всех изменений с возможностью отката
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="visual-title">Лента активности</div>
+        <div class="notif-list">
+          <div class="notif-item">
+            <div class="notif-icon" style="background: rgba(108,99,255,0.15);">
+              <i data-lucide="message-circle" width="14" height="14" style="color: var(--accent);"></i>
+            </div>
+            <div class="notif-text">
+              <strong>Максим прокомментировал «Редизайн кабинета»</strong>
+              «Предлагаю сначала финализировать макет — дам правки сегодня» · 2 мин назад
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background: rgba(52,211,153,0.15);">
+              <i data-lucide="check-circle" width="14" height="14" style="color: #34d399;"></i>
+            </div>
+            <div class="notif-text">
+              <strong>Алексей завершил «Тесты платёжного модуля»</strong>
+              Все 42 теста прошли успешно · 15 мин назад
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background: rgba(244,114,182,0.15);">
+              <i data-lucide="user-plus" width="14" height="14" style="color: var(--accent2);"></i>
+            </div>
+            <div class="notif-text">
+              <strong>@кристина добавлена в «Проект Сатурн»</strong>
+              Роль: Дизайнер интерфейсов · 1 ч назад
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Большая фича 3: интеграции -->
+    <div class="feature-big reveal">
+      <div class="feature-text">
+        <span class="badge">
+          <i data-lucide="plug" width="12" height="12"></i>
+          Интеграции
+        </span>
+        <h3 class="feature-title">Всё, чем вы<br>уже пользуетесь</h3>
+        <p class="feature-desc">
+          Подключайте любимые инструменты в один клик.
+          Запускайте автоматизации по событию — и больше не переключайтесь между приложениями.
+        </p>
+        <ul class="feature-list">
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            40+ готовых интеграций без кода
+          </li>
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            Вебхуки и открытый REST API
+          </li>
+          <li>
+            <span class="check-icon"><i data-lucide="check" width="11" height="11"></i></span>
+            Автоматизации по событию, расписанию или коммиту
+          </li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <div class="visual-title">Подключённые сервисы</div>
+        <div class="integrations-grid">
+          <div class="integ-item">
+            <div class="integ-logo" style="background:#0088cc;">TG</div>
+            Telegram
+          </div>
+          <div class="integ-item">
+            <div class="integ-logo" style="background:#4a154b;">SL</div>
+            Slack
+          </div>
+          <div class="integ-item">
+            <div class="integ-logo" style="background:#24292e;">GH</div>
+            GitHub
+          </div>
+          <div class="integ-item">
+            <div class="integ-logo" style="background:#f24e1e;">FG</div>
+            Figma
+          </div>
+          <div class="integ-item">
+            <div class="integ-logo" style="background:#4285f4;">GW</div>
+            Google WS
+          </div>
+          <div class="integ-item" style="border-style: dashed;">
+            <div class="integ-logo" style="background: var(--accent-subtle); color: var(--accent);">+</div>
+            <span style="color: var(--accent);">Ещё 34</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Маленькие карточки -->
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon"><i data-lucide="bar-chart-2" width="22" height="22"></i></div>
+        <div class="feature-card-title">Аналитика команды</div>
+        <div class="feature-card-desc">Скорость выполнения, прогнозы дедлайнов и узкие места — в одном дашборде.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon"><i data-lucide="repeat" width="22" height="22"></i></div>
+        <div class="feature-card-title">Рекуррентные задачи</div>
+        <div class="feature-card-desc">Настройте повторяющиеся задачи один раз — Taskora создаёт их автоматически.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon"><i data-lucide="clock" width="22" height="22"></i></div>
+        <div class="feature-card-title">Трекер времени</div>
+        <div class="feature-card-desc">Встроенный таймер и отчёты по затраченному времени — без сторонних сервисов.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon"><i data-lucide="shield" width="22" height="22"></i></div>
+        <div class="feature-card-title">Права доступа</div>
+        <div class="feature-card-desc">Гостевой, участник, менеджер, администратор — гибкая ролевая модель.</div>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon"><i data-lucide="smartphone" width="22" height="22"></i></div>
+        <div class="feature-card-title">Мобильное приложение</div>
+        <div class="feature-card-desc">iOS и Android с полным функционалом. Работает offline, синхронизируется при подключении.</div>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon"><i data-lucide="archive" width="22" height="22"></i></div>
+        <div class="feature-card-title">История и архив</div>
+        <div class="feature-card-desc">Полная история изменений, откат к любой версии задачи и архив завершённых проектов.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =============================================
+     КАК РАБОТАЕТ
+============================================= -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="badge">
+        <i data-lucide="map" width="12" height="12"></i>
+        Простой старт
+      </span>
+      <h2 class="section-title">Три шага от регистрации<br>до первого рабочего процесса</h2>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-item reveal">
+        <div class="step-number">1</div>
+        <h3 class="step-title">Подключите инструменты</h3>
+        <p class="step-desc">Свяжите мессенджеры, трекеры и сервисы, в которых уже живёт ваша команда — в один клик каждый.</p>
+      </div>
+      <div class="step-item reveal reveal-delay-1">
+        <div class="step-number">2</div>
+        <h3 class="step-title">Настройте рабочее пространство</h3>
+        <p class="step-desc">Перетащите, настройте и автоматизируйте. Задайте правила, которые двигают работу вперёд без лишних действий.</p>
+      </div>
+      <div class="step-item reveal reveal-delay-2">
+        <div class="step-number">3</div>
+        <h3 class="step-title">Фокусируйтесь на главном</h3>
+        <p class="step-desc">Отслеживайте прогресс в реальном времени, а рутину Taskora берёт на себя — чтобы вы думали о результате.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     ЦЕНЫ
+============================================= -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="badge">
+        <i data-lucide="credit-card" width="12" height="12"></i>
+        Цены
+      </span>
+      <h2 class="section-title">Начните бесплатно,<br>растите без ограничений</h2>
+      <p class="section-desc">Без скрытых платежей. Отмена в любой момент.</p>
+    </div>
+
+    <!-- Переключатель -->
+    <div class="billing-toggle reveal">
+      <span>Ежемесячно</span>
+      <div class="toggle-switch" id="billingToggle" role="switch" aria-checked="false" tabindex="0">
+        <div class="toggle-knob"></div>
+      </div>
+      <span>Ежегодно</span>
+      <span class="save-badge">−30%</span>
+    </div>
+
+    <div class="pricing-grid reveal">
+
+      <!-- Бесплатно -->
+      <div class="plan-card">
+        <div class="plan-name">Старт</div>
+        <div class="plan-desc">Для небольших команд до 5 человек</div>
+        <div class="plan-price">
+          <span class="price-currency">₽</span>
+          <span class="price-amount" data-monthly="0" data-yearly="0">0</span>
+          <span class="price-period">/ мес</span>
+        </div>
+        <div class="price-yearly">0 ₽ / год</div>
+        <button class="plan-btn">Начать бесплатно</button>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><i data-lucide="check" width="15" height="15"></i> До 5 участников</li>
+          <li><i data-lucide="check" width="15" height="15"></i> До 20 активных задач</li>
+          <li><i data-lucide="check" width="15" height="15"></i> 3 интеграции</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Kanban-доска</li>
+          <li class="unavail"><i data-lucide="x" width="15" height="15"></i> Аналитика</li>
+          <li class="unavail"><i data-lucide="x" width="15" height="15"></i> ИИ-помощник</li>
+          <li class="unavail"><i data-lucide="x" width="15" height="15"></i> Приоритетная поддержка</li>
+        </ul>
+      </div>
+
+      <!-- Pro — популярный -->
+      <div class="plan-card featured">
+        <div class="popular-tag">Популярный</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-desc">Для активных команд, которые хотят больше</div>
+        <div class="plan-price">
+          <span class="price-currency">₽</span>
+          <span class="price-amount" data-monthly="990" data-yearly="693">990</span>
+          <span class="price-period">/ мес за участника</span>
+        </div>
+        <div class="price-yearly" id="proYearly">693 ₽ / мес при оплате за год</div>
+        <button class="plan-btn primary-btn">Попробовать 14 дней бесплатно</button>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><i data-lucide="check" width="15" height="15"></i> Безлимит участников</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Безлимит задач</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Все интеграции (40+)</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Kanban + Gantt + Список</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Расширенная аналитика</li>
+          <li><i data-lucide="check" width="15" height="15"></i> ИИ-помощник (бета)</li>
+          <li class="unavail"><i data-lucide="x" width="15" height="15"></i> Выделенный менеджер</li>
+        </ul>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="plan-card">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-desc">Для больших организаций с индивидуальными требованиями</div>
+        <div class="plan-price">
+          <span class="price-currency"></span>
+          <span class="price-amount" style="font-size: var(--text-xl);">Индивидуально</span>
+        </div>
+        <div class="price-yearly"></div>
+        <button class="plan-btn">Связаться с отделом продаж</button>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><i data-lucide="check" width="15" height="15"></i> Всё из Pro</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Развёртывание on-premise</li>
+          <li><i data-lucide="check" width="15" height="15"></i> SSO и LDAP</li>
+          <li><i data-lucide="check" width="15" height="15"></i> SLA 99.99%</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Аудит и соответствие 152-ФЗ</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Выделенный менеджер</li>
+          <li><i data-lucide="check" width="15" height="15"></i> Обучение команды</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     FAQ
+============================================= -->
+<section class="faq-section" id="faq">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="badge">
+        <i data-lucide="help-circle" width="12" height="12"></i>
+        Вопросы и ответы
+      </span>
+      <h2 class="section-title">Всё, что нужно знать<br>о Taskora</h2>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Могу ли я отменить подписку в любой момент?</span>
+          <span class="faq-icon"><i data-lucide="plus" width="18" height="18"></i></span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Да. Никаких штрафов и долгосрочных контрактов — вы платите только за фактически использованный период.
+            Отменить или понизить тариф можно в любой момент в настройках оплаты.
+            Доступ сохраняется до конца оплаченного периода.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Есть ли скидки для студентов и НКО?</span>
+          <span class="faq-icon"><i data-lucide="plus" width="18" height="18"></i></span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Да. Студенты и некоммерческие организации получают скидку 50% на тариф Pro по подтверждению статуса.
+            Достаточно зарегистрироваться с учебной или организационной почтой и пройти верификацию.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Насколько безопасны мои данные?</span>
+          <span class="faq-icon"><i data-lucide="plus" width="18" height="18"></i></span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Безопасность встроена с первого дня. Данные передаются по протоколу шифрования TLS 1.3,
+            серверы размещены в РФ, мы соответствуем требованиям 152-ФЗ,
+            а резервные копии создаются ежедневно.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Какие сервисы можно подключить?</span>
+          <span class="faq-icon"><i data-lucide="plus" width="18" height="18"></i></span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Taskora подключается к Telegram, Slack, GitHub, GitLab, Figma, Google Workspace и многим другим.
+            Открытый API и вебхуки позволяют построить собственные интеграции под любые задачи.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Есть ли пробный период для Pro?</span>
+          <span class="faq-icon"><i data-lucide="plus" width="18" height="18"></i></span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Да — 14 дней тарифа Pro бесплатно, карта не требуется.
+            Вы получаете полный доступ ко всем возможностям Pro, чтобы вся команда могла
+            попробовать Taskora перед оплатой.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <span class="faq-question-text">Есть ли мобильное приложение?</span>
+          <span class="faq-icon"><i data-lucide="plus" width="18" height="18"></i></span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Да, Taskora доступна на iOS и Android. Приложение полностью функционально:
+            канбан, задачи, уведомления, чат. Поддерживает офлайн-режим с синхронизацией
+            при восстановлении соединения.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================
+     CTA
+============================================= -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card reveal">
+      <h2 class="cta-title">Присоединяйтесь к&nbsp;12&nbsp;000+ команд,<br>которые работают умнее с Taskora</h2>
+      <p class="cta-desc">
+        Начните прямо сейчас — бесплатно, без карты.
+        Первые результаты почувствуете уже в первый день.
+      </p>
+      <div class="cta-actions">
+        <a href="#pricing" class="btn btn-primary btn-lg">
+          <i data-lucide="zap" width="18" height="18"></i>
+          Начать бесплатно
+        </a>
+        <a href="#features" class="btn btn-ghost btn-lg">Посмотреть возможности</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- =============================================
+     ПОДВАЛ
+============================================= -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <div class="logo-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          Taskora
+        </a>
+        <p class="footer-tagline">Управляй командой без хаоса. Задачи, дедлайны и коммуникация — в одном месте.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Продукт</div>
+        <ul class="footer-links">
+          <li><a href="#features">Возможности</a></li>
+          <li><a href="#pricing">Цены</a></li>
+          <li><a href="#how">Как работает</a></li>
+          <li><a href="#">Обновления</a></li>
+          <li><a href="#">Дорожная карта</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Компания</div>
+        <ul class="footer-links">
+          <li><a href="#">О нас</a></li>
+          <li><a href="#">Блог</a></li>
+          <li><a href="#">Партнёрство</a></li>
+          <li><a href="#">Карьера</a></li>
+          <li><a href="#">Контакты</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Поддержка</div>
+        <ul class="footer-links">
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#">Документация</a></li>
+          <li><a href="#">Статус системы</a></li>
+          <li><a href="#">Конфиденциальность</a></li>
+          <li><a href="#">Условия</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Taskora. Все права защищены.</p>
+      <div class="footer-social">
+        <a href="#" class="social-link" aria-label="Telegram">
+          <i data-lucide="send" width="15" height="15"></i>
+        </a>
+        <a href="#" class="social-link" aria-label="GitHub">
+          <i data-lucide="github" width="15" height="15"></i>
+        </a>
+        <a href="#" class="social-link" aria-label="Twitter/X">
+          <i data-lucide="twitter" width="15" height="15"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- =============================================
+     JAVASCRIPT
+============================================= -->
+<script>
+// 1. ИНИЦИАЛИЗАЦИЯ ИКОНОК LUCIDE
+lucide.createIcons();
+
+// 2. ПЕРЕКЛЮЧЕНИЕ ТЕМЫ
+const html  = document.documentElement;
+const themeBtn  = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+let currentTheme = 'dark';
+
+function setTheme(theme) {
+  currentTheme = theme;
+  html.setAttribute('data-theme', theme);
+  themeIcon.innerHTML = theme === 'dark'
+    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+}
+
+themeBtn.addEventListener('click', () => {
+  setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+});
+
+// 3. ТЕНЬ ШАПКИ ПРИ СКРОЛЛЕ
+const header = document.getElementById('siteHeader');
+
+// IntersectionObserver следит за верхом страницы
+const sentinel = document.createElement('div');
+sentinel.style.cssText = 'position:absolute;top:0;left:0;height:80px;pointer-events:none;';
+document.body.prepend(sentinel);
+
+new IntersectionObserver(([entry]) => {
+  header.classList.toggle('scrolled', !entry.isIntersecting);
+}).observe(sentinel);
+
+// 4. МОБИЛЬНОЕ МЕНЮ
+const menuBtn  = document.getElementById('menuToggle');
+const mobileNav = document.getElementById('mobileNav');
+let menuOpen = false;
+
+menuBtn.addEventListener('click', () => {
+  menuOpen = !menuOpen;
+  mobileNav.classList.toggle('open', menuOpen);
+  menuBtn.setAttribute('aria-expanded', String(menuOpen));
+});
+
+// Закрыть при клике на ссылку
+mobileNav.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    menuOpen = false;
+    mobileNav.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', 'false');
+  });
+});
+
+// 5. АНИМАЦИИ ПОЯВЛЕНИЯ ПРИ СКРОЛЛЕ
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target); // Показываем один раз
+      }
+    });
+  },
+  { threshold: 0.12 }
+);
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// 6. СЧЁТЧИКИ ЧИСЕЛ (requestAnimationFrame + easeOut)
+function animateCounter(el) {
+  const target   = parseInt(el.dataset.counter, 10);
+  const duration = 1800; // мс
+  const start    = performance.now();
+
+  // suffix — символ после числа (%, +, к и т.д.) — определяем по target
+  const suffix = target >= 10000 ? '+' : (target === 98 ? '%' : '+');
+
+  function step(now) {
+    const elapsed  = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // easeOut: замедление к концу
+    const eased    = 1 - Math.pow(1 - progress, 3);
+    const current  = Math.round(eased * target);
+
+    // Форматирование: 12000 → 12 000
+    el.textContent = current.toLocaleString('ru-RU') + suffix;
+
+    if (progress < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+
+// Запускаем счётчик, когда элемент попадает в viewport
+const counterObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.5 }
+);
+
+document.querySelectorAll('[data-counter]').forEach(el => counterObserver.observe(el));
+
+// 7. КУРСОР-СВЕЧЕНИЕ С ИНЕРЦИЕЙ (lerp = linear interpolation)
+const glow = document.getElementById('cursorGlow');
+let mouseX = 0, mouseY = 0;
+let glowX  = 0, glowY  = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+// lerp плавно приближает текущее значение к целевому с коэффициентом t
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function animateGlow() {
+  glowX = lerp(glowX, mouseX, 0.08);
+  glowY = lerp(glowY, mouseY, 0.08);
+  glow.style.left = glowX + 'px';
+  glow.style.top  = glowY + 'px';
+  requestAnimationFrame(animateGlow);
+}
+animateGlow();
+
+// Скрываем, когда курсор покидает окно
+document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
+document.addEventListener('mouseenter', () => { glow.style.opacity = '1'; });
+
+// 8. FAQ — АККОРДЕОН
+document.querySelectorAll('.faq-item').forEach(item => {
+  const question = item.querySelector('.faq-question');
+  question.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    // Закрываем все
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    // Открываем текущий (если был закрыт)
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+// 9. ПЕРЕКЛЮЧАТЕЛЬ ЦЕНЫ МЕСЯЦ / ГОД
+const billingToggle = document.getElementById('billingToggle');
+let isYearly = false;
+
+billingToggle.addEventListener('click', toggleBilling);
+billingToggle.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBilling(); }
+});
+
+function toggleBilling() {
+  isYearly = !isYearly;
+  billingToggle.classList.toggle('on', isYearly);
+  billingToggle.setAttribute('aria-checked', String(isYearly));
+
+  // Обновляем цены в карточках
+  document.querySelectorAll('.price-amount').forEach(el => {
+    const monthly = el.dataset.monthly;
+    const yearly  = el.dataset.yearly;
+    if (monthly === undefined) return;
+    el.textContent = isYearly ? yearly : monthly;
+  });
+
+  // Показываем/скрываем подпись «при оплате за год»
+  document.querySelectorAll('.price-yearly').forEach(el => {
+    el.classList.toggle('show', isYearly);
+  });
+}
+
+// 10. ПЛАВНЫЙ СКРОЛЛ К ЯКОРЯМ
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const id = link.getAttribute('href').slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
